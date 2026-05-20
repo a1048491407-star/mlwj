@@ -163,7 +163,6 @@ function renderSurvey() {
     values: {
       name: "",
       phone: "",
-      email: "",
       experience: "",
       risk: "",
       capital: "",
@@ -202,7 +201,7 @@ function renderSurvey() {
 
   function validateCurrent() {
     if (state.step === contactStep) {
-      return state.values.name.trim() && state.values.phone.trim() && /\S+@\S+\.\S+/.test(state.values.email);
+      return state.values.name.trim() && state.values.phone.trim();
     }
     const q = questions[state.step - 1];
     return String(state.values[q.key] || "").trim();
@@ -228,9 +227,8 @@ function renderSurvey() {
           <div class="field-grid">
             ${field("Full Name", "name", "Your name", state.values.name)}
             ${field("Phone Number", "phone", "+60", state.values.phone)}
-            ${field("Email", "email", "name@example.com", state.values.email)}
           </div>
-          <p class="error" id="errorMsg">Please enter your name, phone number, and a valid email address.</p>
+          <p class="error" id="errorMsg">Please enter your name and phone number.</p>
         </section>
         ${actions()}
       `;
@@ -379,7 +377,7 @@ async function renderAdmin() {
             <p>Tickeron 学员问卷调查 · 马来西亚 🇲🇾</p>
           </div>
           <div class="admin-tools">
-            <input class="text-input search" id="searchInput" placeholder="搜索姓名、电话、邮箱..." />
+            <input class="text-input search" id="searchInput" placeholder="搜索姓名、电话、ID..." />
             <button class="admin-btn" id="exportBtn">导出 CSV</button>
             <a class="admin-btn" href="#survey">打开问卷</a>
             <button class="admin-btn ghost" id="logoutBtn">退出登录</button>
@@ -402,7 +400,7 @@ async function renderAdmin() {
   function filtered() {
     return getResponses().filter((item) => {
       const query = filters.search.toLowerCase();
-      const matchesQuery = !query || [item.name, item.phone, item.email, item.id].some((value) => String(value).toLowerCase().includes(query));
+      const matchesQuery = !query || [item.name, item.phone, item.id].some((value) => String(value).toLowerCase().includes(query));
       return matchesQuery
         && (filters.experience === "All" || item.experience === filters.experience)
         && (filters.risk === "All" || item.risk === filters.risk)
@@ -419,7 +417,7 @@ async function renderAdmin() {
     const metrics = `
       <section class="metrics">
         ${metric("总提交数", total, `当前筛选 ${data.length} 条`, "users", spark([22, 30, 26, 34, 28, 42, 38, 52]))}
-        ${metric("问卷问题数", questions.length, "不含姓名、电话、邮箱", "doc", spark([7, 7, 7, 7, 7, 7, 7, 7], "teal"))}
+        ${metric("问卷问题数", questions.length, "不含姓名、电话", "doc", spark([7, 7, 7, 7, 7, 7, 7, 7], "teal"))}
         ${metric("平均可投资资本", `RM${formatMoney(avg(data.map((x) => Number(x.capital) || 0)))}`, data.length ? "基于当前筛选结果" : "暂无筛选结果", "trend", spark([12, 18, 16, 21, 28, 24, 32, 37], "violet"))}
         ${metric("今日新增", today, "来自全部提交记录", "clock", barsMini([5, 9, 7, 10, 8, 12, 6, 14]))}
       </section>
@@ -475,7 +473,7 @@ async function renderAdmin() {
       <table>
         <thead>
           <tr>
-            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>电子邮件</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 期望利润</th><th>5. 监控时间</th><th>6. 家人朋友知情</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
+            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 期望利润</th><th>5. 监控时间</th><th>6. 家人朋友知情</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -484,7 +482,6 @@ async function renderAdmin() {
               <td>${item.id}</td>
               <td>${escapeHtml(item.name)}</td>
               <td>${escapeHtml(item.phone)}</td>
-              <td>${escapeHtml(item.email)}</td>
               <td>${adminText(item.experience)}</td>
               <td>${adminText(item.risk)}</td>
               <td>RM${formatMoney(Number(item.capital) || 0)}</td>
