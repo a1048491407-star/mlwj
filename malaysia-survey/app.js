@@ -52,21 +52,21 @@ const questions = [
   },
   {
     key: "growthGoal",
-    title: "What is your asset growth target in this profit plan?",
-    hint: "Please choose the option that best matches your goal.",
+    title: "How much profit do you hope to make from your investments?",
+    hint: "Please choose the option that best matches your expectation.",
     type: "single",
     wide: true,
     options: ["RM500 - RM30,000", "RM30,000 - RM100,000", "RM100,000 - RM500,000", "RM500,000 - RM2,000,000", "Above RM2,000,000"],
   },
   {
     key: "discipline",
-    title: "Can you strictly follow the guidelines for designated buy and sell points?",
+    title: "Do you have enough time to monitor the stock market?",
     type: "single",
     options: ["Yes", "No", "Maybe"],
   },
   {
     key: "confidentialExecution",
-    title: "Do you want the investment plan to be executed in absolute confidentiality?",
+    title: "Do your family and friends know about your investments?",
     type: "single",
     options: ["Yes", "No"],
   },
@@ -428,7 +428,7 @@ async function renderAdmin() {
       <section class="filter-bar">
         ${filter("投资经验", "experienceFilter", ["All", ...questions[0].options], filters.experience)}
         ${filter("风险承受能力", "riskFilter", ["All", ...questions[1].options], filters.risk)}
-        ${filter("资产增长目标", "goalFilter", ["All", ...questions[3].options], filters.goal)}
+        ${filter("期望利润", "goalFilter", ["All", ...questions[3].options], filters.goal)}
         ${filter("经纪商不良记录", "recordFilter", ["All", "Yes", "No"], filters.record)}
         <button class="admin-btn" id="clearFilters">清除筛选</button>
       </section>
@@ -439,8 +439,8 @@ async function renderAdmin() {
         <article class="admin-card">${barPanel(data, "risk", "2. 风险承受能力", questions[1].options)}</article>
         <article class="admin-card">${capitalPanel(data)}</article>
         <article class="admin-card">${goalPanel(data)}</article>
-        <article class="admin-card">${barPanel(data, "discipline", "5. 遵守指定买卖点", questions[4].options)}</article>
-        <article class="admin-card">${barPanel(data, "confidentialExecution", "6. 保密执行需求", questions[5].options)}</article>
+        <article class="admin-card">${barPanel(data, "discipline", "5. 是否有时间监控股市", questions[4].options)}</article>
+        <article class="admin-card">${barPanel(data, "confidentialExecution", "6. 家人朋友是否知情", questions[5].options)}</article>
         <article class="admin-card">${barPanel(data, "badRecord", "7. 经纪商/交易公司不良记录", questions[6].options)}</article>
         <article class="admin-card">${trendPanel(data)}</article>
         <article class="admin-card">${insightsPanel(data)}</article>
@@ -457,7 +457,7 @@ async function renderAdmin() {
       dashboard: `${metrics}${filtersMarkup}${charts}${table}`,
       results: `${filtersMarkup}${charts}${table}`,
       respondents: `${filtersMarkup}${table}`,
-      reports: `${metrics}<section class="dashboard-grid"><article class="admin-card wide">${insightsPanel(data)}</article><article class="admin-card">${donutPanel(data, "experience", "1. 投资经验", questions[0].options)}</article><article class="admin-card">${barPanel(data, "risk", "2. 风险承受能力", questions[1].options)}</article><article class="admin-card">${capitalPanel(data)}</article><article class="admin-card">${goalPanel(data)}</article><article class="admin-card">${barPanel(data, "discipline", "5. 遵守指定买卖点", questions[4].options)}</article><article class="admin-card">${barPanel(data, "confidentialExecution", "6. 保密执行需求", questions[5].options)}</article><article class="admin-card">${barPanel(data, "badRecord", "7. 经纪商/交易公司不良记录", questions[6].options)}</article></section>`,
+      reports: `${metrics}<section class="dashboard-grid"><article class="admin-card wide">${insightsPanel(data)}</article><article class="admin-card">${donutPanel(data, "experience", "1. 投资经验", questions[0].options)}</article><article class="admin-card">${barPanel(data, "risk", "2. 风险承受能力", questions[1].options)}</article><article class="admin-card">${capitalPanel(data)}</article><article class="admin-card">${goalPanel(data)}</article><article class="admin-card">${barPanel(data, "discipline", "5. 是否有时间监控股市", questions[4].options)}</article><article class="admin-card">${barPanel(data, "confidentialExecution", "6. 家人朋友是否知情", questions[5].options)}</article><article class="admin-card">${barPanel(data, "badRecord", "7. 经纪商/交易公司不良记录", questions[6].options)}</article></section>`,
     };
 
     document.querySelector("#adminContent").innerHTML = contentByView[activeView];
@@ -475,7 +475,7 @@ async function renderAdmin() {
       <table>
         <thead>
           <tr>
-            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>电子邮件</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 资产增长目标</th><th>5. 遵守买卖点</th><th>6. 保密执行</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
+            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>电子邮件</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 期望利润</th><th>5. 监控时间</th><th>6. 家人朋友知情</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -675,7 +675,7 @@ function goalPanel(data) {
   const counts = countBy(data, "growthGoal", options);
   const total = Math.max(data.length, 1);
   return `
-    <h3 class="panel-title">4. 资产增长目标</h3>
+    <h3 class="panel-title">4. 期望利润</h3>
     <div class="goal-bars">
       ${options.map((option, index) => `
         <div class="goal-col">
@@ -741,8 +741,8 @@ function trendPanel(data) {
 
 function productPanel(data) {
   const products = [
-    ["严格遵守买卖点", "discipline", "Yes", "target"],
-    ["要求保密执行", "confidentialExecution", "Yes", "shield"],
+    ["有时间监控股市", "discipline", "Yes", "target"],
+    ["家人朋友知情", "confidentialExecution", "Yes", "shield"],
     ["无不良记录", "badRecord", "No", "check"],
     ["高级及以上", "experience", "Advanced", "trend"],
     ["进取型风险", "risk", "Aggressive", "chart"],
@@ -762,13 +762,15 @@ function productPanel(data) {
 function insightsPanel(data) {
   const topExperience = adminText(topValue(data, "experience") || "暂无数据");
   const cleanRecords = data.filter((item) => item.badRecord === "No").length;
-  const strict = data.filter((item) => item.discipline === "Yes").length;
+  const hasTime = data.filter((item) => item.discipline === "Yes").length;
+  const familyKnows = data.filter((item) => item.confidentialExecution === "Yes").length;
   const total = Math.max(data.length, 1);
   return `
     <h3 class="panel-title">AI / 运营洞察</h3>
     <div class="insights">
       <div class="insight"><span class="insight-icon">${icon("target")}</span><span><b>主要人群：</b>${topExperience}投资者目前占比最高。</span></div>
-      <div class="insight"><span class="insight-icon">${icon("check")}</span><span><b>${percent(strict, total)}</b> 的受访者可以严格遵守指定买卖点。</span></div>
+      <div class="insight"><span class="insight-icon">${icon("clock")}</span><span><b>${percent(hasTime, total)}</b> 的受访者有充足时间监控股市。</span></div>
+      <div class="insight"><span class="insight-icon">${icon("users")}</span><span><b>${percent(familyKnows, total)}</b> 的受访者表示家人或朋友知晓其投资情况。</span></div>
       <div class="insight"><span class="insight-icon">${icon("shield")}</span><span><b>${percent(cleanRecords, total)}</b> 的受访者表示在经纪商或交易公司无不良记录。</span></div>
     </div>
   `;
