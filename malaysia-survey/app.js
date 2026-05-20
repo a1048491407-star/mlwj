@@ -123,6 +123,18 @@ async function persistResponse(response) {
   }
 }
 
+async function deleteResponseFromServer(id) {
+  try {
+    const result = await fetch(`/api/responses/${encodeURIComponent(id)}`, { method: "DELETE" });
+    if (!result.ok) return false;
+    const responses = await result.json();
+    if (Array.isArray(responses)) saveResponses(responses);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 function icon(name) {
   const icons = {
     arrowLeft: '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
@@ -454,7 +466,7 @@ async function renderAdmin() {
       <table>
         <thead>
           <tr>
-            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>电子邮件</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 资产增长目标</th><th>5. 遵守买卖点</th><th>6. 保密执行</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th>
+            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>电子邮件</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 资产增长目标</th><th>5. 遵守买卖点</th><th>6. 保密执行</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -473,6 +485,7 @@ async function renderAdmin() {
               <td>${adminText(item.badRecord)}</td>
               <td>${new Date(item.submittedAt).toLocaleDateString("en-MY")}</td>
               <td><span class="status">${adminText(item.status)}</span></td>
+              <td><button type="button" class="admin-btn ghost row-delete" data-delete-id="${escapeHtml(item.id)}" data-delete-name="${escapeHtml(item.name || item.id)}">删除</button></td>
             </tr>
           `).join("")}
         </tbody>
@@ -525,6 +538,26 @@ async function renderAdmin() {
   document.querySelector("#logoutBtn").addEventListener("click", () => {
     sessionStorage.removeItem(ADMIN_AUTH_KEY);
     renderAdminLogin();
+  });
+
+  document.querySelector("#adminContent").addEventListener("click", async (event) => {
+    const btn = event.target.closest("[data-delete-id]");
+    if (!btn || btn.disabled) return;
+    const id = btn.getAttribute("data-delete-id");
+    const label = btn.getAttribute("data-delete-name") || id;
+    if (!id) return;
+    if (!window.confirm(`确认删除「${label}」（ID: ${id}）的提交记录吗？\n\n此操作不可恢复。`)) return;
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "删除中...";
+    const ok = await deleteResponseFromServer(id);
+    if (!ok) {
+      btn.disabled = false;
+      btn.textContent = originalText;
+      window.alert("删除失败，请刷新页面后重试。");
+      return;
+    }
+    renderView();
   });
 
   renderView();

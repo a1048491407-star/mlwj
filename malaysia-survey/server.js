@@ -177,6 +177,23 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (url.pathname.startsWith("/api/responses/") && req.method === "DELETE") {
+    const id = decodeURIComponent(url.pathname.slice("/api/responses/".length));
+    if (!id) {
+      sendJson(res, 400, { error: "Missing response id" });
+      return;
+    }
+    const responses = readResponses();
+    const next = responses.filter((item) => item.id !== id);
+    if (next.length === responses.length) {
+      sendJson(res, 404, { error: "Response not found", id });
+      return;
+    }
+    writeResponses(next);
+    sendJson(res, 200, next);
+    return;
+  }
+
   serveStatic(req, res);
 });
 
