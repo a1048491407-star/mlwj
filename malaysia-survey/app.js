@@ -155,8 +155,11 @@ function icon(name) {
 }
 
 function renderSurvey() {
+  const totalSteps = questions.length + 1;
+  const contactStep = questions.length + 1;
+
   let state = {
-    step: 0,
+    step: 1,
     values: {
       name: "",
       phone: "",
@@ -198,20 +201,24 @@ function renderSurvey() {
   const done = document.querySelector("#doneCard");
 
   function validateCurrent() {
-    if (state.step === 0) return state.values.name.trim() && state.values.phone.trim() && /\S+@\S+\.\S+/.test(state.values.email);
+    if (state.step === contactStep) {
+      return state.values.name.trim() && state.values.phone.trim() && /\S+@\S+\.\S+/.test(state.values.email);
+    }
     const q = questions[state.step - 1];
     return String(state.values[q.key] || "").trim();
   }
 
   function renderStep() {
-    const percent = state.step === 0 ? 0 : Math.round((state.step / questions.length) * 100);
-    document.querySelector("#stepLabel").textContent = state.step === 0 ? "Required Information" : `Question ${state.step} of ${questions.length}`;
+    const percent = Math.round((state.step / totalSteps) * 100);
+    document.querySelector("#stepLabel").textContent = state.step === contactStep
+      ? `Step ${state.step} of ${totalSteps} · Required Information`
+      : `Question ${state.step} of ${questions.length}`;
     document.querySelector("#progressFill").style.width = `${percent}%`;
     document.querySelector("#progressPercent").textContent = `${percent}%`;
     done.classList.remove("visible");
     form.style.display = "block";
 
-    if (state.step === 0) {
+    if (state.step === contactStep) {
       form.innerHTML = `
         <section class="field-card">
           <div class="question-heading">
@@ -277,10 +284,12 @@ function renderSurvey() {
   }
 
   function actions() {
+    const isFirst = state.step === 1;
+    const isLast = state.step === contactStep;
     return `
       <div class="form-actions">
-        <button class="secondary-btn" type="button" id="backBtn">${icon("arrowLeft")} Back</button>
-        <button class="primary-btn" type="submit">${state.step === questions.length ? "Submit" : "Next"} ${icon("arrowRight")}</button>
+        <button class="secondary-btn" type="button" id="backBtn"${isFirst ? " disabled aria-disabled=\"true\"" : ""}>${icon("arrowLeft")} Back</button>
+        <button class="primary-btn" type="submit">${isLast ? "Submit" : "Next"} ${icon("arrowRight")}</button>
       </div>
     `;
   }
@@ -302,7 +311,7 @@ function renderSurvey() {
     });
 
     document.querySelector("#backBtn").addEventListener("click", () => {
-      if (state.step === 0) return;
+      if (state.step <= 1) return;
       state.step -= 1;
       renderStep();
     });
@@ -313,7 +322,7 @@ function renderSurvey() {
         document.querySelector("#errorMsg").classList.add("visible");
         return;
       }
-      if (state.step < questions.length) {
+      if (state.step < contactStep) {
         state.step += 1;
         renderStep();
         return;
