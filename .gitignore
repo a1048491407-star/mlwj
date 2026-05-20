@@ -28,3 +28,6 @@ logs/
 # Build output
 dist/
 build/
+
+# Local deployment helper scripts
+.deploy/
