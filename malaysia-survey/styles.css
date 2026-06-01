@@ -246,6 +246,10 @@ a {
   gap: 16px;
 }
 
+.field-grid.stack {
+  grid-template-columns: 1fr;
+}
+
 .field label {
   display: block;
   margin-bottom: 8px;

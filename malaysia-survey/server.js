@@ -75,7 +75,7 @@ function filterResponses(responses, query) {
   const record = query.get("record") || "All";
 
   return responses.filter((item) => {
-    const matchesSearch = !search || [item.id, item.name, item.phone].some((value) => String(value || "").toLowerCase().includes(search));
+    const matchesSearch = !search || [item.id, item.name, item.phone, item.assistantInfo].some((value) => String(value || "").toLowerCase().includes(search));
     return matchesSearch
       && (experience === "All" || item.experience === experience)
       && (risk === "All" || item.risk === risk)
@@ -89,11 +89,12 @@ function csvCell(value) {
 }
 
 function toCsv(responses) {
-  const headers = ["ID", "姓名", "电话", "1. 投资经验", "2. 风险承受能力", "3. 可投资资本", "4. 期望利润", "5. 是否有时间监控股市", "6. 家人朋友是否知情", "7. 是否有不良记录", "提交时间", "状态"];
+  const headers = ["ID", "姓名", "电话", "助理姓名及满意度", "1. 投资经验", "2. 风险承受能力", "3. 可投资资本", "4. 期望利润", "5. 是否有时间监控股市", "6. 家人朋友是否知情", "7. 是否有不良记录", "提交时间", "状态"];
   const rows = responses.map((item) => [
     item.id,
     item.name,
     item.phone,
+    item.assistantInfo,
     adminText(item.experience),
     adminText(item.risk),
     item.capital,

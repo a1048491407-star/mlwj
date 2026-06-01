@@ -162,6 +162,7 @@ function renderSurvey() {
     step: 1,
     values: {
       name: "",
+      assistantInfo: "",
       phone: "",
       experience: "",
       risk: "",
@@ -201,7 +202,7 @@ function renderSurvey() {
 
   function validateCurrent() {
     if (state.step === contactStep) {
-      return state.values.name.trim() && state.values.phone.trim();
+      return state.values.name.trim() && state.values.assistantInfo.trim() && state.values.phone.trim();
     }
     const q = questions[state.step - 1];
     return String(state.values[q.key] || "").trim();
@@ -224,11 +225,12 @@ function renderSurvey() {
             <span class="step-number">i</span>
             <h2>Your required information</h2>
           </div>
-          <div class="field-grid">
+          <div class="field-grid stack">
             ${field("Full Name", "name", "Your name", state.values.name)}
+            ${field("What is your assistant's name, and are you satisfied with her service?", "assistantInfo", "e.g. Jane — yes, very satisfied", state.values.assistantInfo)}
             ${field("Phone Number", "phone", "+60", state.values.phone)}
           </div>
-          <p class="error" id="errorMsg">Please enter your name and phone number.</p>
+          <p class="error" id="errorMsg">Please complete all fields.</p>
         </section>
         ${actions()}
       `;
@@ -400,7 +402,7 @@ async function renderAdmin() {
   function filtered() {
     return getResponses().filter((item) => {
       const query = filters.search.toLowerCase();
-      const matchesQuery = !query || [item.name, item.phone, item.id].some((value) => String(value).toLowerCase().includes(query));
+      const matchesQuery = !query || [item.name, item.phone, item.id, item.assistantInfo].some((value) => String(value).toLowerCase().includes(query));
       return matchesQuery
         && (filters.experience === "All" || item.experience === filters.experience)
         && (filters.risk === "All" || item.risk === filters.risk)
@@ -473,7 +475,7 @@ async function renderAdmin() {
       <table>
         <thead>
           <tr>
-            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 期望利润</th><th>5. 监控时间</th><th>6. 家人朋友知情</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
+            <th>受访者 ID</th><th>姓名</th><th>电话</th><th>助理 / 满意度</th><th>1. 投资经验</th><th>2. 风险承受能力</th><th>3. 可投资资本</th><th>4. 期望利润</th><th>5. 监控时间</th><th>6. 家人朋友知情</th><th>7. 不良记录</th><th>提交日期</th><th>状态</th><th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -482,6 +484,7 @@ async function renderAdmin() {
               <td>${item.id}</td>
               <td>${escapeHtml(item.name)}</td>
               <td>${escapeHtml(item.phone)}</td>
+              <td>${escapeHtml(item.assistantInfo)}</td>
               <td>${adminText(item.experience)}</td>
               <td>${adminText(item.risk)}</td>
               <td>RM${formatMoney(Number(item.capital) || 0)}</td>
